@@ -1,0 +1,36 @@
+%full {
+  position: absolute;
+  top: 0px;
+  right: 0px;
+  bottom: 0px;
+  left: 0px;
+}
+html, body {
+  margin: 0px;
+  height: 100%;
+  font-family: "Helvetica Neue", Helvetica, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "微软雅黑", Arial, sans-serif;
+  #app {
+    @extend %full;
+    min-width: 1366px;
+    a {
+      text-decoration: none;
+    }
+  }
+}
+.verify-code{
+  margin-bottom: 0 !important;
+  float: left;
+}
+.verify-input-area{
+  display: none;
+}
+.verify-code-area{
+  float: right;
+  width: 44px !important;
+}
+.el-input-group__append{
+  padding: 0 !important;
+}
+.cerify-code-panel {
+  width: 130px;
+}
