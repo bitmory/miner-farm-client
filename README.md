@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # blockchainwebsite
 
 ## Project setup
@@ -27,3 +28,6 @@ npm run lint
 
 ### Customize configuration
 See [Configuration Reference](https://cli.vuejs.org/config/).
+=======
+# miner-farm-client
+>>>>>>> fc51a70a33ef1dc56c2a3d8a72e26618d5da06a0
