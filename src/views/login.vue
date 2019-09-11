@@ -31,14 +31,14 @@
                         <!--                            <i slot="prepend" class="fa fa-keyboard-o"></i>-->
                     </el-input>
                 </el-form-item>
-                <el-form-item prop="captchaCode">
-                    <el-input type="text" v-model="formLogin.captchaCode" placeholder="验证码">
-                        <!--                            <template slot="prepend">验证码</template>-->
-                        <template slot="append">
-                            <Verify width="83px" height="36px" fontSize="16px" :type="1" :codeLength="4" :showButton="false"></Verify>
-                        </template>
-                    </el-input>
-                </el-form-item>
+<!--                <el-form-item prop="captchaCode">-->
+<!--                    <el-input type="text" v-model="formLogin.captchaCode" placeholder="验证码">-->
+<!--                        &lt;!&ndash;                            <template slot="prepend">验证码</template>&ndash;&gt;-->
+<!--                        <template slot="append">-->
+<!--                            <Verify width="83px" height="36px" fontSize="16px" :type="1" :codeLength="4" :showButton="false"></Verify>-->
+<!--                        </template>-->
+<!--                    </el-input>-->
+<!--                </el-form-item>-->
                 <el-button size="default" @click="submit" type="primary" class="button-login">登录</el-button>
             </el-form>
         </el-card>
@@ -54,6 +54,7 @@
 </template>
 <script>
 import Verify from "vue2-verify";
+import * as API_login from '@/api/sys.login'
 export default {
     data () {
         const checkCaptchaCode = (rule, value, callback)=>{
@@ -100,21 +101,14 @@ export default {
             this.$refs.loginForm.validate(valid => {
                 if (valid) {
                     let params = {
-                        userName: this.formLogin.userName,
-                        password: this.formLogin.password,
-                        captchaCode: this.formLogin.captchaCode,
+                        username: this.formLogin.userName,
+                        password: this.formLogin.password
                     }
                     API_login.AccountLogin(params).then(res=> {
                         console.log(res)
-                        if (res.success === true) {
-                            // 重定向对象不存在则返回顶层路径
-                            localStorage.setItem('token',res.data.tokenModel.token);
-                            localStorage.setItem('userId',res.data.tokenModel.userId);
-                            localStorage.setItem('userType',res.data.tokenModel.userType);
-                            this.set(this.formLogin)
-                            this.$router.replace(this.$route.query.redirect || '/index')
-                            // this.$router.push(`/index`)
-                        }
+                        localStorage.setItem('username',this.formLogin.userName);
+                        localStorage.setItem('role',res.role);
+                        this.$router.push('/about')
                     })
                 }else{
                     this.$message.error('表单校验失败')
@@ -139,10 +133,10 @@ export default {
         height: 100%;
     }
     .page-login-form{
-        width: 280px;
+        width: 350px;
         position: absolute;
         top: 30%;
-        left: 50%;
+        left: 40%;
         .page-login--options {
             padding: 0px;
             font-size: 14px;
