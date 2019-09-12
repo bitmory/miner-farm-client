@@ -7,25 +7,25 @@
     <div class="search">
       <el-form inline>
         <el-form-item label="矿池：">
-          <el-select v-model="orePool" clearable filterable placeholder="请选择">
+          <el-select @change="changePool" v-model="orePool" clearable filterable placeholder="请选择">
             <el-option
                     v-for="item in orePoolList"
-                    :key="item.value"
-                    :label="item.label"
-                    :value="item.value">
+                    :key="item"
+                    :label="item"
+                    :value="item">
             </el-option>
           </el-select>
         </el-form-item>
-        <el-form-item label="矿机：">
-          <el-select v-model="orePool" clearable filterable placeholder="请选择">
-            <el-option
-                    v-for="item in orePoolList"
-                    :key="item.value"
-                    :label="item.label"
-                    :value="item.value">
-            </el-option>
-          </el-select>
-        </el-form-item>
+<!--        <el-form-item label="矿机：">-->
+<!--          <el-select v-model="orePool" clearable filterable placeholder="请选择">-->
+<!--            <el-option-->
+<!--                    v-for="item in orePoolList"-->
+<!--                    :key="item.value"-->
+<!--                    :label="item.label"-->
+<!--                    :value="item.value">-->
+<!--            </el-option>-->
+<!--          </el-select>-->
+<!--        </el-form-item>-->
         <el-form-item label="矿机状态：">
           <el-radio-group v-model="type">
             <el-radio :label="0">全部</el-radio>
@@ -48,26 +48,80 @@
         </div>
       </div>
       <div class="page-type">
-        <el-table stripe style="width: 100%" :data="tableData">
-          <el-table-column prop="name" label="托管方" :show-overflow-tooltip="true" min-width="11%" align="center"></el-table-column>
-          <el-table-column prop="ip" label="ip" :show-overflow-tooltip="true" min-width="11%" align="center"></el-table-column>
-          <el-table-column prop="status" label="状态" :show-overflow-tooltip="true" min-width="11%" align="center"></el-table-column>
-          <el-table-column prop="type" label="矿机类型" :show-overflow-tooltip="true" min-width="11%" align="center"></el-table-column>
-          <el-table-column prop="location" label="位置" :show-overflow-tooltip="true" min-width="11%" align="center"></el-table-column>
-          <el-table-column prop="hashrate" label="算力" :show-overflow-tooltip="true" min-width="11%" align="center"></el-table-column>
-          <el-table-column prop="energy" label="能耗" :show-overflow-tooltip="true" min-width="11%" align="center"></el-table-column>
-          <el-table-column prop="temperature" label="温度" :show-overflow-tooltip="true" min-width="11%" align="center"></el-table-column>
-          <el-table-column label="操作" :show-overflow-tooltip="true" min-width="11%" align="center">
-            <template slot-scope="scope">
-              <el-button size="mini" type="text" @click="checkDetail(scope.$index, scope.row)">详情</el-button>
-            </template>
-          </el-table-column>
-        </el-table>
+        <div class="page-table-item" @click="checkDetail" v-for="(item,id) in tableData" :key="id">
+            <p>托管方：{{item.name}}</p>
+            <p>ip：{{item.ip}}</p>
+            <p>状态：{{item.status}}</p>
+            <p>矿机类型：{{item.type}}</p>
+            <p>位置：{{item.location}}</p>
+            <p>算力：{{item.hashrate}}</p>
+            <p>能耗：{{item.energy}}</p>
+            <p>温度：{{item.temperature}}</p>
+        </div>
       </div>
     </div>
+    <el-dialog
+            title="矿机详情"
+            :visible.sync="dialogVisible"
+            width="60%">
+      <div class="page-content">
+        <h4>192.169.0.102</h4>
+        <p>
+          <span class="text-hd">已启动</span><span class="text-inc">13 hours ago</span>
+          <span class="text-hd">挖矿软件正常运行</span><span class="text-inc">18h 54m</span>
+          <span class="text-hd">ip</span><span class="text-inc">192.169.0.102</span>
+        </p>
+      </div>
+      <div class="page-type-dig">
+        <el-table stripe style="width: 100%" :data="tableData">
+          <el-table-column prop="name" label="链" :show-overflow-tooltip="true" min-width="11%" align="center"></el-table-column>
+          <el-table-column prop="ip" label="ASIC" :show-overflow-tooltip="true" min-width="11%" align="center"></el-table-column>
+          <el-table-column prop="status" label="频率" :show-overflow-tooltip="true" min-width="11%" align="center"></el-table-column>
+          <el-table-column prop="type" label="瓦" :show-overflow-tooltip="true" min-width="11%" align="center"></el-table-column>
+          <el-table-column prop="location" label="硬件" :show-overflow-tooltip="true" min-width="11%" align="center"></el-table-column>
+          <el-table-column prop="hashrate" label="温度" :show-overflow-tooltip="true" min-width="11%" align="center"></el-table-column>
+          <el-table-column prop="energy" label="ASIC状态" :show-overflow-tooltip="true" min-width="11%" align="center"></el-table-column>
+        </el-table>
+        <div class="page-item">
+          <div class="item-static">
+            <h4>78% 4689 rpm</h4>
+            <p>风扇4</p>
+          </div>
+          <div class="item-static">
+            <h4>94% 4689 rpm</h4>
+            <p>风扇5</p>
+          </div>
+          <div class="item-static ">
+            <h4>1.41分钟 1.09分钟 1.07分钟</h4>
+            <p>平均载入</p>
+          </div>
+          <div class="item-static">
+            <h4>85.3Mb</h4>
+            <p>剩余空间</p>
+          </div>
+          <div class="item-static">
+            <h4>1.0.0</h4>
+            <p>系统版本</p>
+          </div>
+        </div>
+        <div class="page-intro">
+          <div class="intro-item" v-for="(item,id) in introList" :key="id">
+            <p>
+              <span class="intro-hd">{{item.name}}：</span>
+              <span class="intro-text">{{item.value}}</span>
+            </p>
+          </div>
+        </div>
+      </div>
+<!--      <span slot="footer" class="dialog-footer">-->
+<!--    <el-button @click="dialogVisible = false">取 消</el-button>-->
+<!--    <el-button type="primary" @click="dialogVisible = false">确 定</el-button>-->
+<!--  </span>-->
+    </el-dialog>
   </div>
 </template>
 <script>
+  import * as API_miner from '@/api/miner'
   export default {
     data () {
       return {
@@ -101,17 +155,131 @@
           name:'每日支出'
         },
         ],
+        introList:[
+          {
+            value:'2 × ARMv7 Processor rev 0 (v7l)',
+            name:'CPU'
+          },
+          {
+            value:'Antminer S9 Hiveon',
+            name:'模组'
+          },
+          {
+            value:'asic',
+            name:'系统类型'
+          },
+          {
+            value:'3.14.0-xilinx-ge8a2f71-dirty',
+            name:'内核'
+          },
+          {
+            value:'61.166.56.36',
+            name:'远程IP'
+          },
+          {
+            value:'10.91.1.193',
+            name:'本地 IP'
+          },
+          {
+            value:'00:35:99:2e:10:8e',
+            name:'Mac地址'
+          },
+        ],
         orePool:'',
-        orePoolList:[{
-          value:1,
-          label:'一期'
-        },
-        {
-          value:2,
-          label:'二期'
-        }],
+        orePoolList:[],
         type:0,
+        dialogVisible:false,
         tableData:[
+          {
+            name:'123',
+            ip:'192.168.0.101',
+            status:'在线',
+            type:'AMT',
+            location:'一期',
+            hashrate:'123',
+            energy:'126',
+            temperature:'23C',
+          },
+          {
+            name:'123',
+            ip:'192.168.0.101',
+            status:'在线',
+            type:'AMT',
+            location:'一期',
+            hashrate:'123',
+            energy:'126',
+            temperature:'23C',
+          },
+          {
+            name:'123',
+            ip:'192.168.0.101',
+            status:'在线',
+            type:'AMT',
+            location:'一期',
+            hashrate:'123',
+            energy:'126',
+            temperature:'23C',
+          },
+          {
+            name:'123',
+            ip:'192.168.0.101',
+            status:'在线',
+            type:'AMT',
+            location:'一期',
+            hashrate:'123',
+            energy:'126',
+            temperature:'23C',
+          },
+          {
+            name:'123',
+            ip:'192.168.0.101',
+            status:'在线',
+            type:'AMT',
+            location:'一期',
+            hashrate:'123',
+            energy:'126',
+            temperature:'23C',
+          },
+          {
+            name:'123',
+            ip:'192.168.0.101',
+            status:'在线',
+            type:'AMT',
+            location:'一期',
+            hashrate:'123',
+            energy:'126',
+            temperature:'23C',
+          },
+          {
+            name:'123',
+            ip:'192.168.0.101',
+            status:'在线',
+            type:'AMT',
+            location:'一期',
+            hashrate:'123',
+            energy:'126',
+            temperature:'23C',
+          },
+          {
+            name:'123',
+            ip:'192.168.0.101',
+            status:'在线',
+            type:'AMT',
+            location:'一期',
+            hashrate:'123',
+            energy:'126',
+            temperature:'23C',
+          },
+          {
+            name:'123',
+            ip:'192.168.0.101',
+            status:'在线',
+            type:'AMT',
+            location:'一期',
+            hashrate:'123',
+            energy:'126',
+            temperature:'23C',
+          },
           {
             name:'123',
             ip:'192.168.0.101',
@@ -126,11 +294,28 @@
       }
     },
     mounted () {
-
+        this.getPoolList()
+        this.getMiningList()
     },
     methods:{
+      getPoolList () {
+        API_miner.getLocation().then(res => {
+          this.orePoolList = res
+        })
+      },
+      getMiningList (orePool) {
+        let params = {
+          location:orePool
+        }
+        API_miner.MiningPool(params).then(res => {
+
+        })
+      },
+      changePool (val) {
+        this.getMiningList(val)
+      },
       checkDetail () {
-        this.$router.push({path:'/mileDetail'})
+        this.dialogVisible = true
       }
     }
   }
@@ -182,6 +367,19 @@
     }
       .page-type{
         margin-top: 20px;
+        display: flex;
+        justify-content: flex-start;
+        flex-wrap: wrap;
+        .page-table-item{
+          width: 10%;
+          background: #fff;
+          margin-top: 10px;
+          text-align: center;
+          box-shadow: 0 1px 3px 0 #2c3e50;
+        }
+        .page-table-item:hover {
+          background: #eee;
+        }
       }
     }
   }

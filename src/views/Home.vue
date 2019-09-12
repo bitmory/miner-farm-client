@@ -11,14 +11,19 @@
     <el-container>
       <el-aside width="200px">
         <el-menu
-                default-active="2"
+                default-active="about"
                 class="el-menu-vertical-demo"
                 background-color="#545c64"
                 text-color="#fff"
+                router
                 active-text-color="#ffd04b">
-          <el-menu-item index="2" class="one-item">
-            <i class="el-icon-menu"></i>
+          <el-menu-item index="about" class="one-item">
+            <i class="el-icon-s-platform"></i>
             <span slot="title">矿机管理</span>
+          </el-menu-item>
+          <el-menu-item index="miningPool" class="one-item">
+            <i class="el-icon-s-custom"></i>
+            <span slot="title">托管方管理</span>
           </el-menu-item>
         </el-menu>
       </el-aside>
