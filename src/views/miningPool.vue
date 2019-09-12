@@ -21,16 +21,25 @@
         <div class="page-main">
             <h3>矿机统计</h3>
             <div class="page-type">
-                <el-table stripe style="width: 100%;" height="100%" :data="tableData">
-                  <el-table-column v-for="(item,id) in list" v-if="id <3" :key="id" :prop="item.label" :label="item.head" :show-overflow-tooltip="true" min-width="7%" align="center"></el-table-column>
+                <el-table stripe style="width: 100%;" height="calc(100% - 30px)" :data="tableData.slice((pageData.pageNo-1)*pageData.pageSize,pageData.pageNo*pageData.pageSize)">
+                  <el-table-column v-for="(item) in obj1"  :key="item.id" :prop="item.label" :label="item.head" :show-overflow-tooltip="true" min-width="7%" align="center"></el-table-column>
                   <el-table-column  prop="link" label="观察者链接" :show-overflow-tooltip="true" min-width="7%" align="center">
                       <template slot-scope="scope">
                         <a :href="scope.row.link" target="_blank">{{scope.row.link}}</a>
                       </template>
                   </el-table-column>
-                  <el-table-column v-for="(item,id) in list" v-if="id >4" :key="id" :prop="item.label" :label="item.head" :show-overflow-tooltip="true" min-width="7%" align="center"></el-table-column>
+                  <el-table-column v-for="(item) in obj2"  :key="item.id" :prop="item.label" :label="item.head" :show-overflow-tooltip="true" min-width="7%" align="center"></el-table-column>
                 </el-table>
-
+                <el-pagination
+                        class="alRight"
+                        @size-change="handleSizeChange"
+                        @current-change="handleCurrentChange"
+                        :current-page="pageData.pageNo"
+                        :page-sizes="[15, 30, 50]"
+                        :page-size="pageData.pageSize"
+                        layout="total, sizes, prev, pager, next, jumper"
+                        :total="Number(total)">
+                </el-pagination>
             </div>
         </div>
     </div>
@@ -101,10 +110,26 @@
                         label:'updatedate'
                     },
                 ],
-                tableData:[]
+                tableData:[],
+                pageData:{
+                    pageSize:15,
+                    pageNo:1
+                },
+                total:'',
+                obj1:[],
+                obj2:[]
             }
         },
+        computed : {
+
+        },
         mounted () {
+            this.obj1 = this.list.filter((e,i) => {
+                return i<3
+            })
+            this.obj2 = this.list.filter((e,i) => {
+                return i>4
+            })
             this.getPoolList()
             this.getMiningList()
         },
@@ -120,10 +145,17 @@
                 }
                 API_miner.MiningPool(params).then(res => {
                     this.tableData = res
+                    this.total = this.tableData.length
                 })
             },
             changePool (val) {
                 this.getMiningList(val)
+            },
+            handleSizeChange(val) {
+                this.pageData.pageSize = val
+            },
+            handleCurrentChange (val) {
+                this.pageData.pageNo = val
             }
         }
     }

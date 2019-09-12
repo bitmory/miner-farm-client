@@ -295,7 +295,7 @@
     },
     mounted () {
         this.getPoolList()
-        this.getMiningList()
+        // this.getMiningList()
     },
     methods:{
       getPoolList () {

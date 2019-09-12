@@ -27,7 +27,7 @@ export function MiningPool (params) {
     return request({
         url: `api/Miner/MiningPool`,
         method: 'get',
-        loading:false,
+        loading:true,
         params:params?params:{}
     })
 }
