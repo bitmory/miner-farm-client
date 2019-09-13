@@ -19,7 +19,10 @@
             </el-form>
         </div>
         <div class="page-main">
-            <h3>矿机统计</h3>
+            <div class="page-main-hd">
+                <h3>矿机统计</h3>
+                <el-button type="primary" @click="addDiag">添加</el-button>
+            </div>
             <div class="page-type">
                 <el-table stripe style="width: 100%;" height="calc(100% - 30px)" :data="tableData.slice((pageData.pageNo-1)*pageData.pageSize,pageData.pageNo*pageData.pageSize)">
                   <el-table-column v-for="(item) in obj1"  :key="item.id" :prop="item.label" :label="item.head" :show-overflow-tooltip="true" min-width="7%" align="center"></el-table-column>
@@ -29,6 +32,12 @@
                       </template>
                   </el-table-column>
                   <el-table-column v-for="(item) in obj2"  :key="item.id" :prop="item.label" :label="item.head" :show-overflow-tooltip="true" min-width="7%" align="center"></el-table-column>
+                    <el-table-column fixed="right" label="操作" width="100">
+                        <template slot-scope="scope">
+                            <el-button @click="handleClick(scope.row)" type="text" size="small">编辑</el-button>
+                            <el-button type="text" size="small" style="color: #ff1211">删除</el-button>
+                        </template>
+                    </el-table-column>
                 </el-table>
                 <el-pagination
                         class="alRight"
@@ -42,6 +51,38 @@
                 </el-pagination>
             </div>
         </div>
+        <el-dialog  title="矿机详情" :visible.sync="dialogVisible" width="30%">
+            <el-form label-position="left" label-width="110px" ref="fromData" :model="fromData" :rules="rules">
+                <el-form-item label="用户名：" prop="username">
+                    <el-input v-model="fromData.username"></el-input>
+                </el-form-item>
+                <el-form-item label="矿机类型：" prop="minertype">
+                    <el-input v-model="fromData.minertype"></el-input>
+                </el-form-item>
+                <el-form-item label="地点：" prop="location">
+                    <el-input v-model="fromData.location"></el-input>
+                </el-form-item>
+                <el-form-item label="观察者链接：" prop="link">
+                    <el-input v-model="fromData.link"></el-input>
+                </el-form-item>
+                <el-form-item label="矿池类型：" prop="pooltype">
+                    <el-input v-model="fromData.pooltype"></el-input>
+                </el-form-item>
+                <el-form-item label="上机台数：" prop="total">
+                <el-input v-model="fromData.total"></el-input>
+                </el-form-item>
+                <el-form-item label="理论算力：" prop="standardcalculation">
+                    <el-input v-model="fromData.standardcalculation"></el-input>
+                </el-form-item>
+                <el-form-item label="算力单位：" prop="unit">
+                    <el-input v-model="fromData.unit"></el-input>
+                </el-form-item>
+                <el-form-item>
+                    <el-button type="primary" @click="addPool">确定</el-button>
+                    <el-button>取消</el-button>
+                </el-form-item>
+            </el-form>
+        </el-dialog>
     </div>
 </template>
 <script>
@@ -117,7 +158,45 @@
                 },
                 total:'',
                 obj1:[],
-                obj2:[]
+                obj2:[],
+                dialogVisible:false,
+                fromData:{
+                  username:'',
+                  minertype:'',
+                  location:'',
+                  link:'',
+                  pooltype:'',
+                  total:'',
+                  standardcalculation:'',
+                  unit:''
+                },
+                rowId:'',
+                rules:{
+                    username:[
+                        { required: true, message: "请输入用户名", trigger: "blur" }
+                    ],
+                    minertype:[
+                        { required: true, message: "请输入矿机类型", trigger: "blur" }
+                    ],
+                    location:[
+                        { required: true, message: "请输入地点", trigger: "blur" }
+                    ],
+                    link:[
+                        { required: true, message: "请输入观察者链接", trigger: "blur" }
+                    ],
+                    pooltype:[
+                        { required: true, message: "请输入矿池类型", trigger: "blur" }
+                    ],
+                    total:[
+                        { required: true, message: "请输入上机台数", trigger: "blur" }
+                    ],
+                    standardcalculation:[
+                        { required: true, message: "请输入理论算力", trigger: "blur" }
+                    ],
+                    unit:[
+                        { required: true, message: "请输入算力单位", trigger: "blur" }
+                    ]
+                }
             }
         },
         computed : {
@@ -156,6 +235,36 @@
             },
             handleCurrentChange (val) {
                 this.pageData.pageNo = val
+            },
+            handleClick() {
+
+            },
+            addDiag(row) {
+                this.dialogVisible = true
+                this.rowId = row.id
+            },
+            addPool() {
+                this.$refs.fromData.validate(valid => {
+                    if(valid) {
+                        if(this.rowId) {
+                            API_miner.editMiningPool(this.fromData,this.rowId).then(res => {
+                                this.$message({
+                                    type:'success',
+                                    message:'编辑成功'
+                                })
+                                this.dialogVisible = false
+                            })
+                        }else {
+                            API_miner.addMiningPool(this.fromData).then(res => {
+                                this.$message({
+                                    type:'success',
+                                    message:'添加成功'
+                                })
+                                this.dialogVisible = false
+                            })
+                        }
+                    }
+                })
             }
         }
     }
@@ -184,6 +293,16 @@
                 padding: 10px;
                 text-align: left;
                 border-bottom: 1px solid #f2f2f2;
+            }
+            .page-main-hd {
+                display: flex;
+                justify-content: space-between;
+                flex-direction: row;
+                padding-right: 20px;
+                .el-button{
+                    margin-bottom: 10px;
+
+                }
             }
             .page-type{
                 height: 90%;

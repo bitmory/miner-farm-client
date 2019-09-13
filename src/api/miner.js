@@ -31,3 +31,30 @@ export function MiningPool (params) {
         params:params?params:{}
     })
 }
+
+/**
+ * 添加矿池
+ * @param data
+*/
+export function addMiningPool (data) {
+    return request({
+        url: `api/Miner/MiningPool/Add`,
+        method: 'post',
+        loading:true,
+        data
+    })
+}
+
+/**
+ * 编辑矿池
+ * @param data
+ * @param id
+ */
+export function editMiningPool (data,id) {
+    return request({
+        url: `api/Miner/MiningPool/Edit?poolid=`+id,
+        method: 'post',
+        loading:true,
+        data
+    })
+}
