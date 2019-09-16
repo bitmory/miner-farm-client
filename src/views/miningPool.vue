@@ -35,7 +35,7 @@
                     <el-table-column fixed="right" label="操作" width="100">
                         <template slot-scope="scope">
                             <el-button @click="handleClick(scope.row)" type="text" size="small">编辑</el-button>
-                            <el-button type="text" size="small" style="color: #ff1211">删除</el-button>
+                            <el-button type="text" size="small" style="color: #ff1211" @click="deleteClick(scope.row)">删除</el-button>
                         </template>
                     </el-table-column>
                 </el-table>
@@ -236,12 +236,22 @@
             handleCurrentChange (val) {
                 this.pageData.pageNo = val
             },
-            handleClick() {
-
+            deleteClick(row) {
+                API_miner.deleteMiningPool(row.id).then(res => {
+                    if(res) {
+                        this.$message({
+                            type:'success',
+                            message:'删除成功'
+                        })
+                       this.getMiningList()
+                    }
+                })
             },
-            addDiag(row) {
-                this.dialogVisible = true
+            handleClick(row) {
                 this.rowId = row.id
+            },
+            addDiag() {
+                this.dialogVisible = true
             },
             addPool() {
                 this.$refs.fromData.validate(valid => {
@@ -253,6 +263,7 @@
                                     message:'编辑成功'
                                 })
                                 this.dialogVisible = false
+                                this.getMiningList()
                             })
                         }else {
                             API_miner.addMiningPool(this.fromData).then(res => {
@@ -261,6 +272,7 @@
                                     message:'添加成功'
                                 })
                                 this.dialogVisible = false
+                                this.getMiningList()
                             })
                         }
                     }

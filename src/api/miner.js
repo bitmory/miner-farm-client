@@ -58,3 +58,15 @@ export function editMiningPool (data,id) {
         data
     })
 }
+
+/**
+ * 删除矿池
+ * @param id
+ */
+export function deleteMiningPool (id) {
+    return request({
+        url: `api/Miner/MiningPool/Delete?poolid=`+id,
+        method: 'post',
+        loading:true
+    })
+}
