@@ -106,8 +106,9 @@ export default {
                     }
                     API_login.AccountLogin(params).then(res=> {
                         console.log(res)
-                        localStorage.setItem('username',this.formLogin.userName);
+                        localStorage.setItem('username',res.username);
                         localStorage.setItem('role',res.role);
+                        localStorage.setItem('token',res.token)
                         this.$router.push('/about')
                     })
                 }else{

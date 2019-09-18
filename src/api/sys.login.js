@@ -1,9 +1,9 @@
 import request from '@/service/index'
-export function AccountLogin (params) {
+export function AccountLogin (data) {
     return request({
-        url: `api/User/Login`,
+        url: `api/Auth/authenticate`,
         method: 'post',
         loading:false,
-        params
+        data
     })
 }

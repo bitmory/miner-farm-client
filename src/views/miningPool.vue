@@ -6,8 +6,8 @@
         </el-breadcrumb>
         <div class="search">
             <el-form inline>
-                <el-form-item label="矿池：">
-                    <el-select @change="changePool" v-model="orePool" clearable filterable placeholder="请选择">
+                <el-form-item label="矿池地点：">
+                    <el-select @change="changePool" v-model="orePool" clearable filterable placeholder="请选择矿机地点">
                         <el-option
                                 v-for="item in orePoolList"
                                 :key="item"
@@ -16,6 +16,16 @@
                         </el-option>
                     </el-select>
                 </el-form-item>
+<!--                <el-form-item label="矿池类型：">-->
+<!--                    <el-select @change="changePoolType" v-model="poolType" clearable filterable placeholder="请选择">-->
+<!--                        <el-option-->
+<!--                                v-for="item in poolTypeList"-->
+<!--                                :key="item"-->
+<!--                                :label="item"-->
+<!--                                :value="item">-->
+<!--                        </el-option>-->
+<!--                    </el-select>-->
+<!--                </el-form-item>-->
             </el-form>
         </div>
         <div class="page-main">
@@ -60,13 +70,28 @@
                     <el-input v-model="fromData.minertype"></el-input>
                 </el-form-item>
                 <el-form-item label="地点：" prop="location">
-                    <el-input v-model="fromData.location"></el-input>
+<!--                    <el-input v-model="fromData.location"></el-input>-->
+                    <el-select  v-model="fromData.location" clearable filterable>
+                        <el-option
+                                v-for="item in orePoolList"
+                                :key="item"
+                                :label="item"
+                                :value="item">
+                        </el-option>
+                    </el-select>
+                </el-form-item>
+                <el-form-item label="矿池类型：" prop="pooltype">
+                    <el-select  v-model="fromData.pooltype" clearable filterable placeholder="请选择">
+                        <el-option
+                                v-for="item in poolTypeList"
+                                :key="item"
+                                :label="item"
+                                :value="item">
+                        </el-option>
+                    </el-select>
                 </el-form-item>
                 <el-form-item label="观察者链接：" prop="link">
                     <el-input v-model="fromData.link"></el-input>
-                </el-form-item>
-                <el-form-item label="矿池类型：" prop="pooltype">
-                    <el-input v-model="fromData.pooltype"></el-input>
                 </el-form-item>
                 <el-form-item label="上机台数：" prop="total">
                 <el-input v-model="fromData.total"></el-input>
@@ -78,8 +103,8 @@
                     <el-input v-model="fromData.unit"></el-input>
                 </el-form-item>
                 <el-form-item>
-                    <el-button type="primary" @click="addPool">确定</el-button>
-                    <el-button>取消</el-button>
+                    <el-button type="primary" @click="addPool('fromData')">确定</el-button>
+                    <el-button @click="cancel('fromData')">取消</el-button>
                 </el-form-item>
             </el-form>
         </el-dialog>
@@ -92,6 +117,8 @@
             return {
                 orePool:'',
                 orePoolList:[],
+                poolType:'',
+                poolTypeList:[],
                 type:0,
                 list:[
                     {
@@ -179,13 +206,13 @@
                         { required: true, message: "请输入矿机类型", trigger: "blur" }
                     ],
                     location:[
-                        { required: true, message: "请输入地点", trigger: "blur" }
+                        { required: true, message: "请选择地点", trigger: "change" }
                     ],
                     link:[
                         { required: true, message: "请输入观察者链接", trigger: "blur" }
                     ],
                     pooltype:[
-                        { required: true, message: "请输入矿池类型", trigger: "blur" }
+                        { required: true, message: "请选择矿池类型", trigger: "change" }
                     ],
                     total:[
                         { required: true, message: "请输入上机台数", trigger: "blur" }
@@ -207,17 +234,20 @@
                 return i<3
             })
             this.obj2 = this.list.filter((e,i) => {
-                return i>4
+                return i>3
             })
             this.getPoolList()
+            this.getPoolType()
             this.getMiningList()
         },
         methods:{
+            //获取矿池地点
             getPoolList () {
                 API_miner.getLocation().then(res => {
                     this.orePoolList = res
                 })
             },
+            //换取矿池列表
             getMiningList (orePool) {
                 let params = {
                     location:orePool
@@ -227,15 +257,23 @@
                     this.total = this.tableData.length
                 })
             },
+            //获取矿池类型
+            getPoolType () {
+                API_miner.getPoolTypes().then(res => {
+                    this.poolTypeList= res
+                })
+            },
             changePool (val) {
                 this.getMiningList(val)
             },
+            //分页
             handleSizeChange(val) {
                 this.pageData.pageSize = val
             },
             handleCurrentChange (val) {
                 this.pageData.pageNo = val
             },
+            //删除
             deleteClick(row) {
                 API_miner.deleteMiningPool(row.id).then(res => {
                     if(res) {
@@ -249,34 +287,66 @@
             },
             handleClick(row) {
                 this.rowId = row.id
+                this.dialogVisible = true
+               let {id,active,currentcalculation,dailycalculation,dead,inactive,...fromData} = row
+                this.fromData = fromData
             },
             addDiag() {
                 this.dialogVisible = true
             },
-            addPool() {
+            //编辑和增加
+            addPool(formName) {
                 this.$refs.fromData.validate(valid => {
                     if(valid) {
+                        if(this.fromData.link.indexOf(this.fromData.pooltype) === -1) {
+                            this.$message({
+                                type:'error',
+                                message:'观察者链接格式不正确'
+                            })
+                            return false
+                        }
                         if(this.rowId) {
                             API_miner.editMiningPool(this.fromData,this.rowId).then(res => {
-                                this.$message({
-                                    type:'success',
-                                    message:'编辑成功'
-                                })
-                                this.dialogVisible = false
-                                this.getMiningList()
+                                if(res){
+                                    this.$message({
+                                        type:'success',
+                                        message:'编辑成功'
+                                    })
+                                    this.dialogVisible = false
+                                    this.getMiningList()
+                                    this.$refs[formName].resetFields();
+                                }else {
+                                    this.$message({
+                                        type:'error',
+                                        message:'编辑失败'
+                                    })
+                                }
+
                             })
                         }else {
                             API_miner.addMiningPool(this.fromData).then(res => {
-                                this.$message({
-                                    type:'success',
-                                    message:'添加成功'
-                                })
-                                this.dialogVisible = false
-                                this.getMiningList()
+                                if(res) {
+                                    this.$message({
+                                        type:'success',
+                                        message:'添加成功'
+                                    })
+                                    this.dialogVisible = false
+                                    this.getMiningList()
+                                    this.$refs[formName].resetFields();
+                                }else {
+                                    this.$message({
+                                        type:'error',
+                                        message:'添加失败'
+                                    })
+                                }
                             })
                         }
                     }
                 })
+            },
+            cancel (formName) {
+                this.$refs[formName].resetFields();
+                this.dialogVisible = false
             }
         }
     }
@@ -294,6 +364,9 @@
                 padding: 20px;
                 margin-bottom: 0;
             }
+        }
+        .el-select{
+            width: 100%;
         }
         .page-main{
             width: 100%;

@@ -21,7 +21,7 @@ function errorLog (error) {
 
 // 创建一个 axios 实例
 const service = axios.create({
-    baseURL: "http://212.64.74.201:8081/",
+    baseURL: "http://212.64.91.248:8080/",
     timeout: 5000// 请求超时时间
     // paramsSerializer: params => qs.stringify(params, { arrayFormat: 'repeat' })
 })
@@ -41,16 +41,7 @@ service.interceptors.request.use(
             })
         }
         // 在请求发送之前做一些处理
-        // const token = localStorage.getItem('userId')
-        // const userId = localStorage.getItem('userId')
-        // const userType = localStorage.getItem('userType')
-        // const token = util.cookies.get('token')
-        config.headers['token'] = localStorage.getItem('userType') + ',' + localStorage.getItem('userId') + ',' + localStorage.getItem('token')
-        /** 进行参数序列化 */
-        // if ((config.method === 'post') && config.headers['Content-Type'] !== 'application/json') {
-        //     config.data = qs.stringify(config.data, { arrayFormat: 'repeat' })
-        // }
-        // debugger
+        config.headers['Authorization'] = 'Bearer' + ' ' + localStorage.getItem('token')
         return config
     },
     error => {
@@ -68,12 +59,11 @@ service.interceptors.response.use(
         const dataAxios = response.data
         // 这个状态码是和后端约定的
         const { status } = dataAxios
-        console.log(response)
         if(response.data.status == 401){
             // alert("您的登录已过期，请重新登录！")
             setTimeout(function(){
                 alert("您的登录已过期，请重新登录！")
-                window.location.href='/updist'
+                window.location.href='/login'
                 // }
                 // })
             },1000)

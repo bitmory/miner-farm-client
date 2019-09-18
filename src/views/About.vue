@@ -295,7 +295,6 @@
     },
     mounted () {
         this.getPoolList()
-        // this.getMiningList()
     },
     methods:{
       getPoolList () {
@@ -303,11 +302,8 @@
           this.orePoolList = res
         })
       },
-      getMiningList (orePool) {
-        let params = {
-          location:orePool
-        }
-        API_miner.MiningPool(params).then(res => {
+      getWorkerList (id) {
+        API_miner.workerDetail(id).then(res => {
 
         })
       },
@@ -371,11 +367,14 @@
         justify-content: flex-start;
         flex-wrap: wrap;
         .page-table-item{
-          width: 10%;
+          width: 9%;
           background: #fff;
-          margin-top: 10px;
-          text-align: center;
+          margin-top: 5px;
+          margin-right: 5px;
+          padding:10px 0 10px 10px;
+          text-align: left;
           box-shadow: 0 1px 3px 0 #2c3e50;
+          cursor: pointer;
         }
         .page-table-item:hover {
           background: #eee;

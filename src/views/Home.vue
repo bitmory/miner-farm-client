@@ -10,20 +10,10 @@
     </el-header>
     <el-container>
       <el-aside width="200px">
-        <el-menu
-                default-active="about"
-                class="el-menu-vertical-demo"
-                background-color="#545c64"
-                text-color="#fff"
-                router
-                active-text-color="#ffd04b">
-          <el-menu-item index="about" class="one-item">
-            <i class="el-icon-s-platform"></i>
-            <span slot="title">矿机管理</span>
-          </el-menu-item>
-          <el-menu-item index="miningPool" class="one-item">
-            <i class="el-icon-s-custom"></i>
-            <span slot="title">托管方管理</span>
+        <el-menu :default-active="active" class="el-menu-vertical-demo" background-color="#545c64" text-color="#fff" router active-text-color="#ffd04b">
+          <el-menu-item v-for="(item)  in menuData" :index="item.path" class="one-item">
+            <i :class="item.icon"></i>
+            <span slot="title">{{item.title}}</span>
           </el-menu-item>
         </el-menu>
       </el-aside>
@@ -32,13 +22,6 @@
       </el-main>
     </el-container>
   </el-container>
-<!--  <div class="home">-->
-<!--    <div class="page-header">-->
-<!--    </div>-->
-<!--    <div class="page-menu">-->
-<!--      -->
-<!--    </div>-->
-<!--  </div>-->
 </template>
 
 <script>
@@ -49,7 +32,14 @@ export default {
   name: 'home',
   data () {
     return {
-      username:''
+      username:'',
+      active:'',
+      menuData:[
+        { path: '/about', title: '矿机管理', icon: 'el-icon-s-platform' },
+        { path: '/miningPool', title: '托管方管理', icon: 'el-icon-files' },
+        { path: '/staffManage', title: '员工管理', icon: 'el-icon-s-custom' },
+        { path: '/workOrderManage', title: '工单管理', icon: 'el-icon-document' },
+      ]
     }
   },
   components: {
@@ -102,6 +92,7 @@ export default {
     }
     .one-item{
       margin-top: 20px;
+      text-align: left;
     }
   }
 
